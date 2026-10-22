@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "loop",
+  "version": "${version}",
+  "name": "Loop",
+  "description": "Record and replay a player movement/action loop.",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dev.sp4rkled.loop.LoopClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "26.3",
+    "fabric-api": "*",
+    "java": ">=25"
+  }
+}
