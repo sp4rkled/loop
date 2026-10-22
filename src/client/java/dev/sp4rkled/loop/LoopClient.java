@@ -76,7 +76,7 @@ public final class LoopClient implements ClientModInitializer {
                 return;
             }
             if (mode == Mode.RECORDING) {
-                Input input = player.input;
+                Input input = player.input.keyPresses;
                 FRAMES.add(new Frame(player.getYRot(), player.getXRot(),
                         input.forward(), input.backward(), input.left(), input.right(),
                         input.jump(), input.shift(), input.sprint(),
