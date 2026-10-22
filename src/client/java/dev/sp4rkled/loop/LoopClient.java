@@ -12,7 +12,7 @@ import net.minecraft.world.entity.player.Input;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Client-side tick recorder/replayer. This intentionally does not teleport or use Baritone. */
+/** Client-side tick recorder/replayer. No teleporting or Baritone integration. */
 public final class LoopClient implements ClientModInitializer {
     private static final List<Frame> FRAMES = new ArrayList<>();
     private static Mode mode = Mode.IDLE;
@@ -21,7 +21,7 @@ public final class LoopClient implements ClientModInitializer {
     private enum Mode { IDLE, RECORDING, PLAYING }
 
     private record Frame(float yaw, float pitch, boolean forward, boolean backward,
-                         boolean left, boolean right, boolean jump, boolean sneak,
+                         boolean left, boolean right, boolean jump, boolean shift,
                          boolean sprint, boolean attack, boolean use) { }
 
     @Override
@@ -79,14 +79,14 @@ public final class LoopClient implements ClientModInitializer {
                 Input input = player.input;
                 FRAMES.add(new Frame(player.getYRot(), player.getXRot(),
                         input.forward(), input.backward(), input.left(), input.right(),
-                        input.jump(), input.sneak(), input.sprint(),
+                        input.jump(), input.shift(), input.sprint(),
                         mc.options.keyAttack.isDown(), mc.options.keyUse.isDown()));
             } else if (mode == Mode.PLAYING && !FRAMES.isEmpty()) {
                 Frame f = FRAMES.get(playbackIndex);
                 player.setYRot(f.yaw());
                 player.setXRot(f.pitch());
                 player.input = new Input(f.forward(), f.backward(), f.left(), f.right(),
-                        f.jump(), f.sneak(), f.sprint());
+                        f.jump(), f.shift(), f.sprint());
                 mc.options.keyAttack.setDown(f.attack());
                 mc.options.keyUse.setDown(f.use());
                 playbackIndex = (playbackIndex + 1) % FRAMES.size();
