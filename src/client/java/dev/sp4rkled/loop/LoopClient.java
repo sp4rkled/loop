@@ -12,7 +12,7 @@ import net.minecraft.world.entity.player.Input;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Client-side tick recorder/replayer. No teleporting or Baritone integration. */
+/** Client-side tick recorder/replayer for Minecraft 26.2. */
 public final class LoopClient implements ClientModInitializer {
     private static final List<Frame> FRAMES = new ArrayList<>();
     private static Mode mode = Mode.IDLE;
@@ -76,7 +76,7 @@ public final class LoopClient implements ClientModInitializer {
                 return;
             }
             if (mode == Mode.RECORDING) {
-                Input input = player.input.keyPresses;
+                Input input = player.input;
                 FRAMES.add(new Frame(player.getYRot(), player.getXRot(),
                         input.forward(), input.backward(), input.left(), input.right(),
                         input.jump(), input.shift(), input.sprint(),

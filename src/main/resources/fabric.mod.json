@@ -9,8 +9,8 @@
     "client": ["dev.sp4rkled.loop.LoopClient"]
   },
   "depends": {
-    "fabricloader": ">=0.19.5",
-    "minecraft": "26.3",
+    "fabricloader": ">=0.19.3",
+    "minecraft": "26.2",
     "fabric-api": "*",
     "java": ">=25"
   }

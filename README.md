@@ -1,6 +1,6 @@
 # Loop (Fabric)
 
-A client-side tick recorder/replayer for Minecraft 26.3. Intended for repeating a simple, manually demonstrated movement/aim/attack pattern (for example, a circular Enderman farm). It does not teleport or use Baritone.
+A client-side tick recorder/replayer for Minecraft 26.2. Intended for repeating a simple, manually demonstrated movement/aim/attack pattern (for example, a circular Enderman farm). It does not teleport or use Baritone.
 
 ## Commands
 
