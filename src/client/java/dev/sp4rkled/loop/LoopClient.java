@@ -2,7 +2,7 @@ package dev.sp4rkled.loop;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -27,7 +27,7 @@ public final class LoopClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-            dispatcher.register(ClientCommandManager.literal("loopstart").executes(ctx -> {
+            dispatcher.register(ClientCommands.literal("loopstart").executes(ctx -> {
                 Minecraft mc = Minecraft.getInstance();
                 if (mc.player == null) return 0;
                 stopPlayback(mc);
@@ -37,7 +37,7 @@ public final class LoopClient implements ClientModInitializer {
                 return 1;
             }));
 
-            dispatcher.register(ClientCommandManager.literal("loopend").executes(ctx -> {
+            dispatcher.register(ClientCommands.literal("loopend").executes(ctx -> {
                 if (mode != Mode.RECORDING) {
                     tell(Minecraft.getInstance(), "Loop: nothing is being recorded.");
                     return 0;
@@ -47,7 +47,7 @@ public final class LoopClient implements ClientModInitializer {
                 return 1;
             }));
 
-            dispatcher.register(ClientCommandManager.literal("looprun").executes(ctx -> {
+            dispatcher.register(ClientCommands.literal("looprun").executes(ctx -> {
                 Minecraft mc = Minecraft.getInstance();
                 if (FRAMES.isEmpty()) {
                     tell(mc, "Loop: no recording yet. Use /loopstart, then /loopend.");
@@ -60,9 +60,9 @@ public final class LoopClient implements ClientModInitializer {
                 return 1;
             }));
 
-            dispatcher.register(ClientCommandManager.literal("loopover").executes(ctx -> {
+            dispatcher.register(ClientCommands.literal("loopover").executes(ctx -> {
                 Minecraft mc = Minecraft.getInstance();
-                if (mode == Mode.PLAYING) releaseKeys(mc);
+                releaseKeys(mc);
                 mode = Mode.IDLE;
                 tell(mc, "Loop: stopped.");
                 return 1;
@@ -76,7 +76,7 @@ public final class LoopClient implements ClientModInitializer {
                 return;
             }
             if (mode == Mode.RECORDING) {
-                Input input = player.input;
+                Input input = player.input.keyPresses;
                 FRAMES.add(new Frame(player.getYRot(), player.getXRot(),
                         input.forward(), input.backward(), input.left(), input.right(),
                         input.jump(), input.shift(), input.sprint(),
@@ -85,8 +85,13 @@ public final class LoopClient implements ClientModInitializer {
                 Frame f = FRAMES.get(playbackIndex);
                 player.setYRot(f.yaw());
                 player.setXRot(f.pitch());
-                player.input = new Input(f.forward(), f.backward(), f.left(), f.right(),
-                        f.jump(), f.shift(), f.sprint());
+                mc.options.keyUp.setDown(f.forward());
+                mc.options.keyDown.setDown(f.backward());
+                mc.options.keyLeft.setDown(f.left());
+                mc.options.keyRight.setDown(f.right());
+                mc.options.keyJump.setDown(f.jump());
+                mc.options.keyShift.setDown(f.shift());
+                mc.options.keySprint.setDown(f.sprint());
                 mc.options.keyAttack.setDown(f.attack());
                 mc.options.keyUse.setDown(f.use());
                 playbackIndex = (playbackIndex + 1) % FRAMES.size();
@@ -100,14 +105,18 @@ public final class LoopClient implements ClientModInitializer {
     }
 
     private static void releaseKeys(Minecraft mc) {
+        mc.options.keyUp.setDown(false);
+        mc.options.keyDown.setDown(false);
+        mc.options.keyLeft.setDown(false);
+        mc.options.keyRight.setDown(false);
+        mc.options.keyJump.setDown(false);
+        mc.options.keyShift.setDown(false);
+        mc.options.keySprint.setDown(false);
         mc.options.keyAttack.setDown(false);
         mc.options.keyUse.setDown(false);
-        if (mc.player != null) {
-            mc.player.input = new Input(false, false, false, false, false, false, false);
-        }
     }
 
     private static void tell(Minecraft mc, String message) {
-        if (mc.player != null) mc.player.displayClientMessage(Component.literal(message), false);
+        mc.gui.getChat().addClientSystemMessage(Component.literal(message));
     }
 }
