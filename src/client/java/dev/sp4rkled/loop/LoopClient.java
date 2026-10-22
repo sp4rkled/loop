@@ -117,6 +117,6 @@ public final class LoopClient implements ClientModInitializer {
     }
 
     private static void tell(Minecraft mc, String message) {
-        mc.gui.getChat().addClientSystemMessage(Component.literal(message));
+        mc.gui.hud.getChat().addClientSystemMessage(Component.literal(message));
     }
 }
